@@ -1,0 +1,52 @@
+{
+  "name": "hospital-management-backend",
+  "version": "1.0.0",
+  "description": "🏥 Hospital Management Backend using Express.js, Prisma ORM, and MCP Server",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "mcp": "node mcp_registry/prismaMcpServer.js",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prisma:studio": "npx prisma studio",
+    "prisma:seed": "npx prisma db seed",
+    "lint": "eslint .",
+    "build": "echo \"No build step needed for Node backend\"",
+    "test": "echo \"No test configured yet\" && exit 0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "express",
+    "prisma",
+    "mysql",
+    "nodejs",
+    "backend",
+    "hospital-management-system",
+    "mcp-server",
+    "api"
+  ],
+  "author": "Kundan",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "@prisma/client": "^6.18.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "eslint": "^9.12.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.18.0"
+  }
+}
