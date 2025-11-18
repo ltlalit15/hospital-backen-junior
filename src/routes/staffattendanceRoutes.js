@@ -16,7 +16,7 @@ import { verifyToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// 🔒 Protect all routes
+// 🔒 Protect all routes   
 router.use(verifyToken);
 
 router.post("/", createAttendance);       // ✅ Mark attendance
