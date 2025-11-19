@@ -130,6 +130,7 @@ const prisma = new PrismaClient();
 export const loginUser = async (req, res) => {
   try {
     const { email } = req.body;
+    console.log("🟢 Login attempt:", { email })``;
 
     // 1️⃣ Check user exists
     const user = await prisma.user.findUnique({
