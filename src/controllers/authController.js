@@ -137,6 +137,8 @@ export const loginUser = async (req, res) => {
       where: { email },
     });
 
+    console.log("🔎 DB user found:", user); 
+
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials (User not found)" });
     }
