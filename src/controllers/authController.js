@@ -133,7 +133,7 @@ export const loginUser = async (req, res) => {
     console.log("🟢 Login attempt:", { email });
 
     // 1️⃣ Check user exists
-    const user = await prisma.user.findUnique({
+    const user = await prisma.User.findUnique({
       where: { email },
     });
 
