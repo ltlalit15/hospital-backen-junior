@@ -640,8 +640,10 @@ model PharmacySale {
   deletedAt      DateTime?
   createdAt      DateTime           @default(now())
   invoices       Invoice[]
-  processedBy    User?              @relation("user_pharmacy_sales", fields: [pharmacistId], references: [id], map: "PharmacySale_ProcessedBy_fkey")
-  processedBy    Pharmacist?        @relation("user_pharmacy_sales", fields: [pharmacistId], references: [id], map: "PharmacySale_ProcessedBy_fkey")
+ processedBy   User?        @relation("user_pharmacy_sales", fields: [pharmacistId], references: [id], map: "PharmacySale_User_ProcessedBy_fkey")
+
+pharmacist    Pharmacist?  @relation("user_pharmacy_sales", fields: [pharmacistId], references: [id], map: "PharmacySale_Pharmacist_fkey")
+
   prescription   Prescription?      @relation(fields: [prescriptionId], references: [id])
   referralCode   ReferralCode?      @relation(fields: [referralCodeId], references: [id])
   items          PharmacySaleItem[]
