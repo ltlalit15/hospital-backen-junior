@@ -234,7 +234,6 @@ export const updatePatient = async (req, res) => {
   }
 };
 
-
 // 🧩 Delete patient
 export const deletePatient = async (req, res) => {
   try {
