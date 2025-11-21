@@ -293,3 +293,35 @@ export const deleteInvoice = async (req, res) => {
     });
   }
 };
+
+
+
+
+export const getPendingPayments = async (req, res) => {
+  try {
+    const pending = await prisma.invoice.findMany({
+      where: { paymentStatus: "PENDING", isActive: true },
+      include: { patient: { include: { user: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(pending);
+  } catch (err) {
+    res.status(500).json({ message: "Failed", error: err.message });
+  }
+};
+
+export const getTodayRevenue = async (req, res) => {
+  try {
+    const start = new Date();
+    start.setHours(0,0,0,0);
+
+    const revenue = await prisma.invoice.aggregate({
+      where: { issuedAt: { gte: start }, paymentStatus: "PAID" },
+      _sum: { paidAmount: true }
+    });
+
+    res.json({ todayRevenue: revenue._sum.paidAmount || 0 });
+  } catch (err) {
+    res.status(500).json({ message: "Failed", error: err.message });
+  }
+};

@@ -9,6 +9,8 @@ import {
 
 import { verifyToken } from "../middlewares/authMiddleware.js";
 
+import { getPatientCount } from "../controllers/patientController.js";
+
 const router = express.Router();
 
 // 🔒 Protect all routes
@@ -20,5 +22,7 @@ router.get("/:id", getPatientById);
 router.put("/:id", updatePatient);
 router.patch("/:id", updatePatient); // Partial update ✅
 router.delete("/:id", deletePatient);
+
+router.get("/count/total", getPatientCount);
 
 export default router;

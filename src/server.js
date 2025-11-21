@@ -26,7 +26,6 @@
 
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import radiologyRoutes from "./routes/radiologyRoutes.js";
 import labRoutes from "./routes/labRoutes.js";
 import medicineRoutes from "./routes/medicineRoutes.js";
@@ -42,7 +41,7 @@ import locationtrackerRoutes from "./routes/locationtrackerRoutes.js";
 import beaconRoutes from "./routes/beaconRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
 
-dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());

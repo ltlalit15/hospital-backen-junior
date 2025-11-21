@@ -1,8 +1,8 @@
 
 
 
-import prisma from "../config/prismaClient.js";
-import bcrypt from "bcrypt";
+// import prisma from "../config/prismaClient.js";
+// import bcrypt from "bcrypt";
 
 /**
  * 👨‍⚕️ Create New Employee (and related role table)
@@ -133,6 +133,17 @@ import bcrypt from "bcrypt";
 //   }
 // };
 
+
+
+
+
+
+
+
+
+import prisma from "../config/prismaClient.js";
+import bcrypt from "bcrypt";
+
 export const createEmployee = async (req, res) => {
   try {
     const {
@@ -257,15 +268,14 @@ export const createEmployee = async (req, res) => {
     ------------------------------------------------------------------ */
     if (roleLower === "pharmacist") {
       await prisma.pharmacist.create({
-        data: {
-          userId: user.id,
-          publicId: crypto.randomUUID(),
-          pharmacistCode: `PHA${String(totalEmployees + 1).padStart(3, "0")}`,
-          departmentId: departmentId ? Number(departmentId) : null,
-          licenseNo: licenseNo || null,
-          specialization: specialization || null,
-        },
-      });
+  data: {
+    userId: user.id,
+    publicId: crypto.randomUUID(),
+    departmentId: departmentId ? Number(departmentId) : null,
+    licenseNo: licenseNo || null,
+    specialization: specialization || null,
+  },
+});
     }
 
     /* ------------------------------------------------------------------
@@ -310,6 +320,10 @@ export const getAllEmployees = async (req, res) => {
     });
 
     res.json(employees);
+    // res.json({
+    //   success: true,
+    //   data: employees,   // ⭐ THIS makes staff dropdown work
+    // });
   } catch (error) {
     console.error("❌ Error fetching employees:", error);
     res
@@ -317,6 +331,8 @@ export const getAllEmployees = async (req, res) => {
       .json({ message: "Failed to fetch employees", error: error.message });
   }
 };
+
+
 
 /**
  * 🔍 Get Single Employee by ID
@@ -417,5 +433,18 @@ export const deleteEmployee = async (req, res) => {
     res
       .status(500)
       .json({ message: "Failed to delete employee", error: error.message });
+  }
+};
+
+
+
+
+
+export const getStaffCount = async (req, res) => {
+  try {
+    const count = await prisma.employee.count({ where: { isActive: true } });
+    res.json({ totalStaff: count });
+  } catch (err) {
+    res.status(500).json({ message: "Failed", error: err.message });
   }
 };

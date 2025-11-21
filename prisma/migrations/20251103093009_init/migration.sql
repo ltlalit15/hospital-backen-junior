@@ -27,33 +27,6 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Beacon` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `beaconCode` VARCHAR(191) NOT NULL,
-    `zoneName` VARCHAR(191) NOT NULL,
-    `building` VARCHAR(191) NULL,
-    `floor` VARCHAR(191) NULL,
-    `isActive` BOOLEAN NOT NULL DEFAULT true,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-
-    UNIQUE INDEX `Beacon_beaconCode_key`(`beaconCode`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `LocationTracking` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `userId` INTEGER NOT NULL,
-    `beaconId` INTEGER NOT NULL,
-    `lastSeen` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `isActive` BOOLEAN NOT NULL DEFAULT true,
-
-    UNIQUE INDEX `LocationTracking_userId_key`(`userId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `AuditLog` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `entity` VARCHAR(191) NOT NULL,
@@ -70,32 +43,18 @@ CREATE TABLE `AuditLog` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Employee` (
+CREATE TABLE `roles` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `publicId` VARCHAR(191) NOT NULL,
-    `userId` INTEGER NOT NULL,
-    `departmentId` INTEGER NULL,
-    `employeeCode` VARCHAR(191) NOT NULL,
-    `role` ENUM('ADMIN', 'DOCTOR', 'NURSE', 'PHARMACIST', 'LAB_TECH', 'RADIOLOGIST', 'FINANCE', 'HR', 'PATIENT', 'AUDITOR') NOT NULL,
-    `dateOfBirth` DATETIME(3) NULL,
-    `phone` VARCHAR(191) NOT NULL,
-    `gender` ENUM('MALE', 'FEMALE', 'OTHER', 'UNKNOWN') NOT NULL DEFAULT 'UNKNOWN',
-    `address` VARCHAR(191) NULL,
-    `specialization` VARCHAR(191) NULL,
-    `qualification` VARCHAR(191) NULL,
-    `experience` VARCHAR(191) NULL,
-    `joinDate` DATETIME(3) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
     `isActive` BOOLEAN NOT NULL DEFAULT true,
-    `deletedAt` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Employee_publicId_key`(`publicId`),
-    UNIQUE INDEX `Employee_userId_key`(`userId`),
-    UNIQUE INDEX `Employee_employeeCode_key`(`employeeCode`),
-    UNIQUE INDEX `Employee_phone_key`(`phone`),
-    INDEX `Employee_departmentId_idx`(`departmentId`),
-    INDEX `Employee_publicId_idx`(`publicId`),
+    UNIQUE INDEX `roles_publicId_key`(`publicId`),
+    UNIQUE INDEX `roles_name_key`(`name`),
+    INDEX `roles_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -119,38 +78,6 @@ CREATE TABLE `Department` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `roles` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `publicId` VARCHAR(191) NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `description` VARCHAR(191) NULL,
-    `isActive` BOOLEAN NOT NULL DEFAULT true,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-
-    UNIQUE INDEX `roles_publicId_key`(`publicId`),
-    UNIQUE INDEX `roles_name_key`(`name`),
-    INDEX `roles_name_idx`(`name`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `RadiologyOrder` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `orderId` VARCHAR(191) NOT NULL,
-    `patientName` VARCHAR(191) NOT NULL,
-    `studyType` VARCHAR(191) NOT NULL,
-    `orderedBy` VARCHAR(191) NOT NULL,
-    `orderedDate` DATETIME(3) NOT NULL,
-    `status` ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PENDING',
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-
-    UNIQUE INDEX `RadiologyOrder_orderId_key`(`orderId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Patient` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `publicId` VARCHAR(191) NOT NULL,
@@ -158,7 +85,7 @@ CREATE TABLE `Patient` (
     `mrn` VARCHAR(191) NULL,
     `fatherName` VARCHAR(191) NOT NULL,
     `nationalId` VARCHAR(191) NULL,
-    `bloodGroup` ENUM('A_POSITIVE', 'A_NEGATIVE', 'B_POSITIVE', 'B_NEGATIVE', 'AB_POSITIVE', 'AB_NEGATIVE', 'O_POSITIVE', 'O_NEGATIVE') NOT NULL,
+    `bloodGroup` ENUM('A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG', 'UNKNOWN') NOT NULL,
     `allergies` VARCHAR(191) NULL,
     `medicalHistory` VARCHAR(191) NULL,
     `currentTreatment` VARCHAR(191) NULL,
@@ -178,6 +105,7 @@ CREATE TABLE `Patient` (
     UNIQUE INDEX `Patient_publicId_key`(`publicId`),
     UNIQUE INDEX `Patient_userId_key`(`userId`),
     UNIQUE INDEX `Patient_mrn_key`(`mrn`),
+    UNIQUE INDEX `Patient_nationalId_key`(`nationalId`),
     INDEX `Patient_publicId_idx`(`publicId`),
     INDEX `Patient_status_idx`(`status`),
     INDEX `Patient_nationalId_idx`(`nationalId`),
@@ -191,8 +119,8 @@ CREATE TABLE `Doctor` (
     `userId` INTEGER NOT NULL,
     `doctorCode` VARCHAR(191) NOT NULL,
     `referralCodeId` INTEGER NULL,
-    `departmentId` INTEGER NULL,
     `speciality` VARCHAR(191) NULL,
+    `departmentId` INTEGER NULL,
     `qualifications` VARCHAR(191) NULL,
     `isActive` BOOLEAN NOT NULL DEFAULT true,
     `deletedAt` DATETIME(3) NULL,
@@ -204,7 +132,6 @@ CREATE TABLE `Doctor` (
     UNIQUE INDEX `Doctor_doctorCode_key`(`doctorCode`),
     INDEX `Doctor_doctorCode_idx`(`doctorCode`),
     INDEX `Doctor_publicId_idx`(`publicId`),
-    INDEX `Doctor_departmentId_idx`(`departmentId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -213,14 +140,12 @@ CREATE TABLE `Nurse` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `publicId` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
-    `departmentId` INTEGER NULL,
     `ward` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Nurse_publicId_key`(`publicId`),
     UNIQUE INDEX `Nurse_userId_key`(`userId`),
-    INDEX `Nurse_departmentId_idx`(`departmentId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -229,15 +154,10 @@ CREATE TABLE `Pharmacist` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `publicId` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
-    `departmentId` INTEGER NULL,
-    `licenseNo` VARCHAR(191) NULL,
-    `specialization` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Pharmacist_publicId_key`(`publicId`),
     UNIQUE INDEX `Pharmacist_userId_key`(`userId`),
-    INDEX `Pharmacist_departmentId_idx`(`departmentId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -313,13 +233,12 @@ CREATE TABLE `Appointment` (
     `patientId` INTEGER NOT NULL,
     `doctorId` INTEGER NULL,
     `departmentId` INTEGER NULL,
-    `referralCodeId` INTEGER NULL,
     `scheduledAt` DATETIME(3) NOT NULL,
-    `durationMins` INTEGER NULL DEFAULT 30,
+    `durationMins` INTEGER NULL,
     `status` ENUM('SCHEDULED', 'CONFIRMED', 'CHECKED_IN', 'IN_CONSULTATION', 'COMPLETED', 'CANCELLED', 'NO_SHOW', 'RESCHEDULED') NOT NULL DEFAULT 'SCHEDULED',
     `reason` VARCHAR(191) NULL,
     `notes` VARCHAR(191) NULL,
-    `createdById` INTEGER NULL,
+    `referralCodeId` INTEGER NULL,
     `checkedInAt` DATETIME(3) NULL,
     `consultedAt` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -474,19 +393,17 @@ CREATE TABLE `DoctorEarning` (
 -- CreateTable
 CREATE TABLE `Medicine` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `brandName` VARCHAR(191) NOT NULL,
-    `genericName` VARCHAR(191) NOT NULL,
-    `strength` VARCHAR(191) NOT NULL,
-    `stock` INTEGER NOT NULL DEFAULT 0,
-    `reorderLevel` INTEGER NOT NULL DEFAULT 0,
-    `expiryDate` DATETIME(3) NULL,
-    `manufacturer` VARCHAR(191) NULL,
-    `batchNumber` VARCHAR(191) NULL,
-    `status` ENUM('IN_STOCK', 'LOW_STOCK', 'CRITICAL', 'OUT_OF_STOCK') NOT NULL DEFAULT 'IN_STOCK',
-    `notes` VARCHAR(191) NULL,
+    `publicId` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `sku` VARCHAR(191) NULL,
+    `brand` VARCHAR(191) NULL,
+    `description` VARCHAR(191) NULL,
+    `unitPrice` DECIMAL(14, 2) NOT NULL DEFAULT 0.00,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Medicine_publicId_key`(`publicId`),
+    UNIQUE INDEX `Medicine_sku_key`(`sku`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -498,9 +415,7 @@ CREATE TABLE `PharmacyStock` (
     `expiryDate` DATETIME(3) NULL,
     `quantity` INTEGER NOT NULL,
     `costPrice` DECIMAL(14, 2) NOT NULL DEFAULT 0.00,
-    `status` ENUM('IN_STOCK', 'LOW_STOCK', 'OUT_OF_STOCK', 'CRITICAL') NOT NULL DEFAULT 'IN_STOCK',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -890,7 +805,7 @@ CREATE TABLE `BloodDonor` (
     `firstName` VARCHAR(191) NOT NULL,
     `lastName` VARCHAR(191) NULL,
     `contact` VARCHAR(191) NULL,
-    `bloodType` ENUM('A_POSITIVE', 'A_NEGATIVE', 'B_POSITIVE', 'B_NEGATIVE', 'AB_POSITIVE', 'AB_NEGATIVE', 'O_POSITIVE', 'O_NEGATIVE') NOT NULL,
+    `bloodType` ENUM('A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG', 'UNKNOWN') NOT NULL,
     `lastDonated` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -903,7 +818,7 @@ CREATE TABLE `BloodInventory` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `publicId` VARCHAR(191) NOT NULL,
     `donorId` INTEGER NULL,
-    `bloodType` ENUM('A_POSITIVE', 'A_NEGATIVE', 'B_POSITIVE', 'B_NEGATIVE', 'AB_POSITIVE', 'AB_NEGATIVE', 'O_POSITIVE', 'O_NEGATIVE') NOT NULL,
+    `bloodType` ENUM('A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG', 'UNKNOWN') NOT NULL,
     `units` INTEGER NOT NULL DEFAULT 1,
     `collectedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expiryAt` DATETIME(3) NULL,
@@ -1047,19 +962,6 @@ CREATE TABLE `housekeeping_tasks` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `LabOrder` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `patientName` VARCHAR(191) NOT NULL,
-    `testType` VARCHAR(191) NOT NULL,
-    `orderedBy` VARCHAR(191) NOT NULL,
-    `status` ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED') NOT NULL DEFAULT 'PENDING',
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `_AppointmentPrescriptions` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -1075,19 +977,7 @@ ALTER TABLE `User` ADD CONSTRAINT `User_createdById_fkey` FOREIGN KEY (`createdB
 ALTER TABLE `User` ADD CONSTRAINT `User_updatedById_fkey` FOREIGN KEY (`updatedById`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `LocationTracking` ADD CONSTRAINT `LocationTracking_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `LocationTracking` ADD CONSTRAINT `LocationTracking_beaconId_fkey` FOREIGN KEY (`beaconId`) REFERENCES `Beacon`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `AuditLog` ADD CONSTRAINT `AuditLog_performedBy_fkey` FOREIGN KEY (`performedBy`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Employee` ADD CONSTRAINT `Employee_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Employee` ADD CONSTRAINT `Employee_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Patient` ADD CONSTRAINT `Patient_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1102,16 +992,10 @@ ALTER TABLE `Doctor` ADD CONSTRAINT `Doctor_departmentId_fkey` FOREIGN KEY (`dep
 ALTER TABLE `Nurse` ADD CONSTRAINT `Nurse_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Nurse` ADD CONSTRAINT `Nurse_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Pharmacist` ADD CONSTRAINT `Pharmacist_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Pharmacist` ADD CONSTRAINT `Pharmacist_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `StaffAttendance` ADD CONSTRAINT `StaffAttendance_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Employee`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `StaffAttendance` ADD CONSTRAINT `StaffAttendance_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Room` ADD CONSTRAINT `Room_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1139,9 +1023,6 @@ ALTER TABLE `Appointment` ADD CONSTRAINT `Appointment_departmentId_fkey` FOREIGN
 
 -- AddForeignKey
 ALTER TABLE `Appointment` ADD CONSTRAINT `Appointment_referralCodeId_fkey` FOREIGN KEY (`referralCodeId`) REFERENCES `ReferralCode`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Appointment` ADD CONSTRAINT `Appointment_createdById_fkey` FOREIGN KEY (`createdById`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `MedicalRecord` ADD CONSTRAINT `MedicalRecord_patientId_fkey` FOREIGN KEY (`patientId`) REFERENCES `Patient`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

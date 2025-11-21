@@ -11,6 +11,10 @@ import {
 
 import { verifyToken } from "../middlewares/authMiddleware.js";
 
+import { getStaffCount } from "../controllers/employeeController.js";
+
+
+
 const router = express.Router();
 
 // 🔒 Protect all routes
@@ -23,5 +27,8 @@ router.get("/:id", getEmployeeById);
 router.patch("/:id", updateEmployee);
 router.put("/:id",updateEmployee);
 router.delete("/:id", deleteEmployee);
+
+
+router.get("/count/total", getStaffCount);
 
 export default router;

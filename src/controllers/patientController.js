@@ -108,10 +108,61 @@ export const getPatientById = async (req, res) => {
 };
 
 // 🧩 Update patient
+// export const updatePatient = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const {
+//       fatherName,
+//       nationalId,
+//       bloodGroup,
+//       allergies,
+//       medicalHistory,
+//       currentTreatment,
+//       height,
+//       weight,
+//       emergencyName,
+//       emergencyPhone,
+//       insuranceProvider,
+//       policyNumber,
+//       insuranceInfo,
+//       status,
+//     } = req.body;
+
+//     const updatedPatient = await prisma.patient.update({
+//       where: { id: Number(id) },
+//       data: {
+//         fatherName,
+//         nationalId,
+//         bloodGroup,
+//         allergies,
+//         medicalHistory,
+//         currentTreatment,
+//         height,
+//         weight,
+//         emergencyName,
+//         emergencyPhone,
+//         insuranceProvider,
+//         policyNumber,
+//         insuranceInfo,
+//         status,
+//       },
+//       include: { user: true },
+//     });
+
+//     res.json({ message: "Patient updated successfully", data: updatedPatient });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error updating patient", error: error.message });
+//   }
+// };
+
+
+// 🧩 Update patient
 export const updatePatient = async (req, res) => {
   try {
     const { id } = req.params;
+
     const {
+      user,
       fatherName,
       nationalId,
       bloodGroup,
@@ -145,15 +196,44 @@ export const updatePatient = async (req, res) => {
         policyNumber,
         insuranceInfo,
         status,
+
+        // 🔥 UPDATE USER (THIS WAS MISSING)
+        user: {
+          update: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            gender: user.gender,
+            dateOfBirth: user.dateOfBirth
+              ? new Date(user.dateOfBirth)
+              : undefined,
+
+            // 🔥 Optional: update password if provided
+            ...(user.password && {
+              password: await bcrypt.hash(user.password, 10),
+            }),
+          },
+        },
       },
       include: { user: true },
     });
 
-    res.json({ message: "Patient updated successfully", data: updatedPatient });
+    res.json({
+      message: "Patient updated successfully",
+      data: updatedPatient,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: "Error updating patient", error: error.message });
+    console.error("Error updating patient:", error);
+    res.status(500).json({
+      message: "Error updating patient",
+      error: error.message,
+    });
   }
 };
+
 
 // 🧩 Delete patient
 export const deletePatient = async (req, res) => {
@@ -163,5 +243,14 @@ export const deletePatient = async (req, res) => {
     res.json({ message: "Patient deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting patient", error: error.message });
+  }
+};
+
+export const getPatientCount = async (req, res) => {
+  try {
+    const count = await prisma.patient.count();
+    res.json({ totalPatients: count });
+  } catch (err) {
+    res.status(500).json({ message: "Failed", error: err.message });
   }
 };
